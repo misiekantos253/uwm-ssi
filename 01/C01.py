@@ -1,4 +1,5 @@
 from enum import Enum
+import statistics
 
 class ColumnDataType(Enum):
      STRING = 's',
@@ -52,6 +53,18 @@ class C01:
             print(f'{key}: {uniqueValuesDict[key]}')
         print('\n')
 
+        print('Odchylenia standardowe dla poszczegolnych atrybutow numerycznych:')
+        stdDevNumeric = self.getStandardDeviationForColumnIndexes(self.getColumnIndexesByType(ColumnDataType.NUMBER))
+        for key in stdDevNumeric.keys():
+            print(f'{key}: {stdDevNumeric[key]}')
+        print('\n')
+
+        print('Odchylenia standardowe dla poszczegolnych atrybutow numerycznych dla poszczególnych klas decyzyjnych:')
+        stdDevClasses = self.calculateStdDevForClassesForColumnIndexes(self.getColumnIndexesByType(ColumnDataType.NUMBER))
+        for key in stdDevClasses.keys():
+            print(f'{key}: {stdDevClasses[key]}')
+        print('\n')
+
     def getLastColumnIndex(self, lines: list):
         return len(lines[0].split(self.separator)) - 1
 
@@ -60,6 +73,21 @@ class C01:
         for line in self.dataFileLines:
             values.append(line.split(self.separator)[columnIndex])
         return values
+
+    def getValuesForColumnWithLines(self, columnIndex, lines = None):
+        values = []
+        for line in lines:
+            values.append(line.split(self.separator)[columnIndex])
+        return values
+
+    def filterLinesByLastColumnValue(self, value, lines = None):
+        filteredLines = []
+        lines = self.dataFileLines if lines is None else lines
+        columnIndex = self.getLastColumnIndex(lines)
+        for line in lines:
+            if line.split(self.separator)[columnIndex] == value:
+                filteredLines.append(line)
+        return filteredLines
 
     def getAllColumnIndexes(self, lines):
         return range(len(lines[0].split(self.separator)))
@@ -110,7 +138,28 @@ class C01:
             uniqueValuesDict[key] = len(uniqueValuesDict[key])
         return uniqueValuesDict
 
+    def getStandardDeviation(self, items):
+        return statistics.stdev(items)
+
+    def getStandardDeviationForColumnIndexes(self, columnIndexes):
+        dict: dict = {}
+        for index in columnIndexes:
+            dict[f'{self.columnNameSymbol}{(index + 1)}'] = self.getStandardDeviation(map(lambda item: float(item), self.getValuesForColumn(index)))
+        return dict
+
+    def getStandardDeviationForColumnIndexesAndLines(self, columnIndexes, lines = None):
+        dict: dict = {}
+        for index in columnIndexes:
+            dict[f'{self.columnNameSymbol}{(index + 1)}'] = self.getStandardDeviation(map(lambda item: float(item), self.getValuesForColumnWithLines(index, lines)))
+        return dict
+
+    def calculateStdDevForClassesForColumnIndexes(self, columnIndexes):
+        stdDevAttributesDict: dict = {}
+        decisionClasses: [int] = self.getUniqueValues(self.getValuesForColumn(self.getLastColumnIndex(self.dataFileLines)))
+        for classValue in decisionClasses:
+            filteredLines = self.filterLinesByLastColumnValue(classValue, self.dataFileLines)
+            stdDevAttributesDict[classValue] = self.getStandardDeviationForColumnIndexesAndLines(columnIndexes, filteredLines)
+        return stdDevAttributesDict
 
 
-excercise = C01("data/australian-type.txt", "data/australian.txt")
-excercise.main()
+C01("data/australian-type.txt", "data/australian.txt").main()
