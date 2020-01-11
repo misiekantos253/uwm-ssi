@@ -1,4 +1,6 @@
 import random
+from ex02 import C02
+
 
 class Estimate:
     dataFileLines: [float] = []
@@ -44,4 +46,5 @@ class Estimate:
         file.close()
 
 
-Estimate("../ex02/data/australian.txt", "../ex02/dec_bayes.txt").trainAndTest()
+Estimate("../data/australian.txt", "../dec_bayes.txt").trainAndTest()
+C02.Bayes("australian_TST.txt", "australian_TRN.txt").main()
