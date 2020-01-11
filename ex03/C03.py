@@ -8,7 +8,7 @@ class Estimate:
     separator: str = ' '
     bayesSeparator: str = ';'
 
-    def __init__(self, dataFileName, bayesFileName):
+    def __init__(self, dataFileName):
         for line in open(dataFileName, "r").readlines():
             lineArr = line.replace('\n', '').split(self.separator)
             self.dataFileLines.append(list(map(float, lineArr)))
@@ -46,5 +46,5 @@ class Estimate:
         file.close()
 
 
-Estimate("../data/australian.txt", "../dec_bayes.txt").trainAndTest()
+Estimate("../data/australian.txt").trainAndTest()
 C02.Bayes("australian_TST.txt", "australian_TRN.txt").main()
