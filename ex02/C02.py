@@ -141,5 +141,3 @@ class Bayes:
         else:
             return random.choice(list(filter(lambda p: p.result == res.result, params)))
 
-
-Bayes("data/australian_TST.txt", "data/australian_TRN.txt").main()
