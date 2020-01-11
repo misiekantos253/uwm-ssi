@@ -26,7 +26,7 @@ class Param:
             f'C = {self.c} : {self.result}  ; proper: {self.proper} ; decEQ: {self.decisionEquals}       ; idx: {self.tstRowIdx}')
 
 
-class C02:
+class Bayes:
     tstFileLines: [float] = []
     trnFileLines: [float] = []
     separator: str = ' '
@@ -142,4 +142,4 @@ class C02:
             return random.choice(list(filter(lambda p: p.result == res.result, params)))
 
 
-C02("data/australian_TST.txt", "data/australian_TRN.txt").main()
+Bayes("data/australian_TST.txt", "data/australian_TRN.txt").main()
